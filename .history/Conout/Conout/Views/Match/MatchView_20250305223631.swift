@@ -61,7 +61,7 @@ struct MatchView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding()
-                        .background(Color.gray.opacity(0.1)) // Replace UIColor.systemGray6
+                        .background(Color(.systemGray6))
                         .cornerRadius(12)
                         
                         // Map view
@@ -106,7 +106,7 @@ struct MatchView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .padding()
-                        .background(Color.gray.opacity(0.2)) // Replace UIColor.systemGray4
+                        .background(Color(.systemGray4))
                         .foregroundColor(.primary)
                         .cornerRadius(10)
                         .padding(.top, 10)
@@ -134,7 +134,7 @@ struct MatchView: View {
                 }
             }
         }
-        .navigationTitle("Your Match")
+        .navigationBarTitle("Your Match", displayMode: .inline)
         .onAppear {
             loadMatch()
         }
@@ -151,11 +151,12 @@ struct MatchView: View {
                 switch result {
                 case .success(let match):
                     self.match = match
-
+                    if let coordinate = match.coordinate {
                         self.region = MKCoordinateRegion(
-                            center: match.coordinate,
+                            center: coordinate,
                             span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
                         )
+                    }
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
                 }
@@ -174,19 +175,7 @@ struct MatchView: View {
     
     private func openVenueInfo() {
         guard let match = match, let url = match.venueURL else { return }
-        openURL(url)
-    }
-    
-    private func openURL(_ url: URL) {
-        #if os(iOS)
-        // Use SwiftUI's environment modifier for opening URLs in iOS 14+
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first,
-              let rootViewController = window.rootViewController else {
-            return
-        }
         UIApplication.shared.open(url)
-        #endif
     }
 }
 
